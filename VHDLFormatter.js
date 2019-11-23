@@ -323,7 +323,7 @@ function beautify(input, settings) {
     //input = input.replace(/\r\n[ \t]+--\r\n/g, "\r\n");
     input = input.replace(/[ ]+/g, ' ');
     input = input.replace(/[ \t]+\r\n/g, "\r\n");
-    input = input.replace(/\r\n\r\n\r\n/g, '\r\n');
+    input = input.replace(/(?:\r\n){3,}/g, '\r\n\r\n');
     input = input.replace(/[\r\n\s]+$/g, '');
     input = input.replace(/[ \t]+\)/g, ')');
     input = input.replace(/\s*\)\s+RETURN\s+([\w]+;)/g, '\r\n) RETURN $1'); //function(..)\r\nreturn type; -> function(..\r\n)return type;
@@ -840,7 +840,7 @@ function escapeText(arr, regex, escapedChar) {
 function RemoveExtraNewLines(input) {
     input = input.replace(/(?:\r\n|\r|\n)/g, '\r\n');
     input = input.replace(/ \r\n/g, '\r\n');
-    input = input.replace(/\r\n\r\n\r\n/g, '\r\n');
+    input = input.replace(/(?:\r\n){3,}/g, '\r\n\r\n');
     return input;
 }
 //# sourceMappingURL=VHDLFormatter.js.map
