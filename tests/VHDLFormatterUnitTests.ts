@@ -778,7 +778,7 @@ function IntegrationTest() {
     newSettings = deepCopy(settings);
     newSettings.RemoveAsserts = true;
     input = "architecture arch of ent is\r\nbegin\r\n    assert False report sdfjcsdfcsdj;\r\n    assert False report sdfjcsdfcsdj severity note;\r\nend architecture;";
-    expected = "ARCHITECTURE arch OF ent IS\r\nBEGIN\r\nEND ARCHITECTURE;"
+    expected = "ARCHITECTURE arch OF ent IS\r\nBEGIN\r\n\r\nEND ARCHITECTURE;"
     actual = beautify(input, newSettings);
     assertAndCountTest("Remove asserts", expected, actual);
 
