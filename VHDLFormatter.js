@@ -507,10 +507,32 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
     ];
     let labelAndKeywordsStr = labelAndKeywords.join("|");
     let labelAndKeywordsRegex = new RegExp("(" + labelAndKeywordsStr + ")([^\\w]|$)");
+    let betweenIfOpThenRegex, closingConditionRegex, closingConditionOpRegex, openingConditionRegex;
+    if (symbol == "<=") {
+        betweenIfOpThenRegex = new RegExp("([^\\w\\-]|^)if[\\(| ].*?<=.*?[\\(| ]then( |$)", "i"); // if ... <= ... then
+        closingConditionRegex = new RegExp("^((?!if).)*then", "i"); // ^ ..(no if).. then
+        closingConditionOpRegex = new RegExp("^((?!if).)*<=((?!if).)*then", "i"); // ^ ..(no if).. <= ..(no if).. then
+        openingConditionRegex = new RegExp("([^\\w\\-]|^)if[\\(| ]((?!then).)*$", "i"); // if ..(no then).. $
+    }
+    let insideCondition = false;
     for (let i = startIndex; i <= endIndex; i++) {
         let line = result[i].Line;
         if (symbol == ":" && line.regexStartsWith(labelAndKeywordsRegex)) {
             continue;
+        }
+        if (symbol == "<=") {
+            let skipCurrentLine = false;
+            if (line.regexCount(betweenIfOpThenRegex) > 0)
+                skipCurrentLine = true;
+            if (line.regexCount(closingConditionRegex) > 0) {
+                insideCondition = false;
+                if (line.regexCount(closingConditionOpRegex) > 0)
+                    skipCurrentLine = true;
+            }
+            if (line.regexCount(openingConditionRegex) > 0)
+                insideCondition = true;
+            if (insideCondition || skipCurrentLine)
+                continue;
         }
         let regex = new RegExp("([\\s\\w\\\\]|^)" + symbol + "([\\s\\w\\\\]|$)");
         if (line.regexCount(regex) > 1) {
